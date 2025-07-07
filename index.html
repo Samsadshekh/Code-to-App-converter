@@ -1,0 +1,270 @@
+<!-- [ START OF UPDATED FILE WITH ADVERTS INSERTED ] -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Code to App Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7f1 100%);
+            min-height: 100vh;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+        .preview-frame {
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            background: white;
+        }
+        .code-container {
+            height: 400px;
+        }
+        #fullscreen-preview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            display: none;
+        }
+        #code-editor {
+            width: 100%;
+            height: 350px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            background: #2d2d2d;
+            color: #f8f8f2;
+            resize: none;
+            border: none;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Fullscreen Preview -->
+    <div id="fullscreen-preview">
+        <button id="fullscreen-close" class="absolute top-4 right-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+            <i class="fas fa-times mr-2"></i>Close
+        </button>
+        <iframe id="fullscreen-iframe" class="w-full h-full border-none"></iframe>
+    </div>
+
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-code text-2xl"></i>
+                    <h1 class="text-2xl font-bold">Code to App Generator</h1>
+                </div>
+                <nav>
+                    <ul class="flex space-x-6">
+                        <li><a href="#" class="hover:underline">Home</a></li>
+                        <li><a href="#" class="hover:underline">Pricing</a></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Advertisement in Header -->
+            <div class="mt-4 bg-yellow-100 text-yellow-800 p-4 rounded-lg shadow">
+                <p class="text-sm font-semibold text-center">📢 Place Advertisement Here (Header)</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Editor Column -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="p-4 border-b border-gray-200">
+                        <h2 class="text-xl font-semibold text-gray-800">Your App Code</h2>
+                    </div>
+                    <div class="code-container">
+                        <textarea id="code-editor" placeholder="Paste your HTML, CSS, and JavaScript code here...">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;My App&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: Arial; text-align: center; padding: 20px; }
+        button { padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Welcome to My App&lt;/h1&gt;
+    &lt;button id="demoBtn"&gt;Click Me&lt;/button&gt;
+    &lt;script&gt;
+        document.getElementById('demoBtn').addEventListener('click', function() {
+            alert('Button clicked!');
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+                    </div>
+                </div>
+
+                <!-- Conversion Section -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">Convert To</h3>
+                    <div class="flex flex-wrap gap-4">
+                        <button id="convert-apk" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center">
+                            <i class="fas fa-download mr-2"></i>Download APK
+                        </button>
+                        <button id="convert-aab" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center">
+                            <i class="fas fa-box mr-2"></i>Download AAB
+                        </button>
+                    </div>
+                    <div id="conversion-status" class="mt-4 hidden">
+                        <div class="bg-blue-50 text-blue-800 p-3 rounded-lg">
+                            <p class="font-medium">Building your application...</p>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                                <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Column -->
+            <div class="space-y-6">
+                <!-- Preview Panel -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-800">Live Preview</h2>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button id="open-browser" class="px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 flex items-center">
+                                <i class="fas fa-external-link-alt mr-1"></i>Browser
+                            </button>
+                            <button id="open-fullscreen" class="px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 flex items-center">
+                                <i class="fas fa-expand mr-1"></i>Fullscreen
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="preview-frame">
+                            <iframe id="app-preview" class="w-full h-[400px] border-none"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advertisement in Main Content -->
+                <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg shadow text-center">
+                    <p class="text-sm font-semibold">📢 Place Advertisement Here (Main Body)</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2023 Code to App Generator. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePreview();
+            document.getElementById('code-editor').addEventListener('input', updatePreview);
+            document.getElementById('convert-apk').addEventListener('click', () => convertApp('apk'));
+            document.getElementById('convert-aab').addEventListener('click', () => convertApp('aab'));
+            document.getElementById('open-fullscreen').addEventListener('click', openFullscreen);
+            document.getElementById('fullscreen-close').addEventListener('click', closeFullscreen);
+            document.getElementById('open-browser').addEventListener('click', openBrowserPreview);
+        });
+
+        function updatePreview() {
+            const code = document.getElementById('code-editor').value;
+            document.getElementById('app-preview').srcdoc = code;
+            document.getElementById('fullscreen-iframe').srcdoc = code;
+        }
+
+        function convertApp(format) {
+            const statusDiv = document.getElementById('conversion-status');
+            const progressBar = document.getElementById('progress-bar');
+            statusDiv.classList.remove('hidden');
+            progressBar.style.width = '0%';
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 2 + Math.random() * 3;
+                if (progress > 100) progress = 100;
+                progressBar.style.width = `${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        statusDiv.innerHTML = `
+                            <div class="bg-green-50 text-green-800 p-3 rounded-lg">
+                                <p class="font-medium">${format.toUpperCase()} build complete!</p>
+                                <button onclick="downloadFile('${format}')" class="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 w-full">
+                                    <i class="fas fa-download mr-2"></i>Download ${format.toUpperCase()} File
+                                </button>
+                            </div>
+                        `;
+                    }, 500);
+                }
+            }, 100);
+        }
+
+        function downloadFile(format) {
+            const content = `Dummy ${format.toUpperCase()} file content. In a real app, this would be your actual compiled application.`;
+            const blob = new Blob([content], {type: 'application/octet-stream'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `my-app.${format}`;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
+
+        function openFullscreen() {
+            document.getElementById('fullscreen-preview').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            updatePreview();
+        }
+
+        function closeFullscreen() {
+            document.getElementById('fullscreen-preview').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function openBrowserPreview() {
+            const code = document.getElementById('code-editor').value;
+            const blob = new Blob([code], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
+<!-- [ END OF FILE ] -->
